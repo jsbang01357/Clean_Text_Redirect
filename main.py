@@ -1,5 +1,3 @@
-# main.py (도쿄 리전 배포용 - 경량 앱)
-
 import streamlit as st
 import streamlit.components.v1 as components
 
@@ -9,10 +7,10 @@ DISCLAIMER_TEXT = """
 이 도구는 의료 데이터 처리 보조 도구입니다. 사용 전 아래 내용을 확인하세요.
 
 [데이터 처리 방식]
-- 입력 데이터는 국내 서버(서울 리전)에서만 처리됩니다
+- 입력 데이터는 브라우저(로컬 환경)에서 먼저 비식별화(환자 등록번호, 날짜, 진료과, 작성자 정보 제거)를 거칩니다
+- 이후 비식별 결과만 국내 백앤드 서버(서울 리전)로 전송되어 처리됩니다
 - 처리된 데이터는 서버에 저장되지 않습니다
-- 자동 비식별 처리가 적용됩니다 (환자 등록번호, 날짜, 진료과, 작성자 정보 제거)
-- 비식별 처리의 완전성을 보장하지 않습니다
+- 자동 비식별화의 완전성은 보장되지 않으므로, 민감정보가 포함된 자유서술 텍스트 입력 시 각별한 주의가 필요합니다.
 
 [사용자 책임]
 - 실환자 데이터 입력 시 소속 기관의 정보보호 규정을 확인하세요
@@ -38,15 +36,25 @@ if not st.session_state.get("accepted"):
     st.divider()
 
     st.warning("사용 전 아래 내용을 확인하세요.")
-    
+
     with st.expander("📋 전문 보기", expanded=True):
         st.markdown(DISCLAIMER_TEXT)
 
+    agreed = st.checkbox(
+        "브라우저(로컬 환경)에서 먼저 비식별 처리된 뒤, 비식별 결과만 서울 리전 서버로 전송되며, 자동 비식별화의 한계를 이해했습니다.",
+        key="disclaimer_checked",
+    )
+
     col1, col2 = st.columns([3, 1])
     with col1:
-        st.caption("확인 버튼 클릭 시 위 내용에 동의한 것으로 간주합니다.")
+        st.caption("체크 후 확인 버튼을 누르면 위 내용에 동의한 것으로 간주합니다.")
     with col2:
-        if st.button("확인했습니다 →", type="primary", use_container_width=True):
+        if st.button(
+            "확인했습니다 →",
+            type="primary",
+            use_container_width=True,
+            disabled=not agreed,
+        ):
             st.session_state["accepted"] = True
             st.rerun()
 
