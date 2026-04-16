@@ -4,23 +4,19 @@ import streamlit.components.v1 as components
 SEOUL_APP_URL = "https://clean-text-seoul-1097794617970.asia-northeast3.run.app"  # 서울 리전 URL
 
 DISCLAIMER_TEXT = """
-이 도구는 의료 데이터 처리 보조 도구입니다. 사용 전 아래 내용을 확인하세요.
+Clean Text는 의료 텍스트 정리와 검사 결과 구조화를 돕는 보조 도구입니다.
 
-[데이터 처리 방식]
-- 입력 데이터는 브라우저(로컬 환경)에서 먼저 비식별화(환자 등록번호, 날짜, 진료과, 작성자 정보 제거)를 거칩니다
-- 이후 비식별 결과만 국내 백앤드 서버(서울 리전)로 전송되어 처리됩니다
-- 처리된 데이터는 서버에 저장되지 않습니다
-- 자동 비식별화의 완전성은 보장되지 않으므로, 민감정보가 포함된 자유서술 텍스트 입력 시 각별한 주의가 필요합니다.
+### 데이터 처리 방식
+- 서울 서버는 앱 실행에 필요한 화면(UI)과 코드만 제공합니다.
+- 실제 입력 데이터 처리는 사용자의 브라우저(로컬 환경)에서 수행됩니다.
+- 텍스트 비식별화, 구조화, 엑셀 생성 과정은 모두 브라우저 내부에서 실행됩니다.
+- 입력한 원문 텍스트와 처리 결과는 서버로 전송되거나 저장되지 않습니다.
 
-[사용자 책임]
-- 실환자 데이터 입력 시 소속 기관의 정보보호 규정을 확인하세요
-- 본 도구 사용으로 발생하는 법적·행정적 책임은 사용자에게 있습니다
-- 개발자는 사용자의 입력 데이터에 대한 책임을 지지 않습니다
-
-[도구 특성]
-- 본 도구는 비상업적 의료 보조 목적으로 제작되었습니다
-- 소스코드는 공개되어 있으며 투명하게 운영됩니다
-- 의료적 판단을 대체하지 않습니다
+### 사용 시 주의사항
+- 자동 비식별화는 입력 형식과 내용에 따라 일부 정보를 완전히 제거하지 못할 수 있습니다.
+- 민감정보가 포함된 자유서술 텍스트는 사용 전 직접 확인해 주세요.
+- 실환자 데이터 입력 시에는 소속 기관의 규정 및 내부 지침을 먼저 확인해 주세요.
+- 본 도구는 의료적 판단이나 기관의 보안 절차를 대체하지 않습니다.
 """
 
 st.set_page_config(
@@ -32,25 +28,27 @@ st.set_page_config(
 # --- Disclaimer ---
 if not st.session_state.get("accepted"):
     st.markdown("## 🧼 Clean Text")
-    st.markdown("##### EMR 구조화 솔루션")
+    st.markdown("##### 의료 텍스트 정리 및 구조화 도구")
     st.divider()
 
-    st.warning("사용 전 아래 내용을 확인하세요.")
+    st.info("서울 서버 앱으로 이동하기 전에 데이터 처리 방식을 확인해 주세요.")
 
-    with st.expander("📋 전문 보기", expanded=True):
+    with st.expander("안내 및 주의사항 보기", expanded=True):
         st.markdown(DISCLAIMER_TEXT)
 
+    st.divider()
+
     agreed = st.checkbox(
-        "브라우저(로컬 환경)에서 먼저 비식별 처리된 뒤, 비식별 결과만 서울 리전 서버로 전송되며, 자동 비식별화의 한계를 이해했습니다.",
+        "앱 코드는 서울 서버에서 제공되지만, 실제 입력 데이터 처리는 내 브라우저(로컬 환경)에서만 수행된다는 점과 자동 비식별화의 한계를 확인했습니다.",
         key="disclaimer_checked",
     )
 
-    col1, col2 = st.columns([3, 1])
+    col1, col2 = st.columns([2, 1])
     with col1:
-        st.caption("체크 후 확인 버튼을 누르면 위 내용에 동의한 것으로 간주합니다.")
+        st.caption("체크 후 아래 버튼을 누르면 서울 서버 앱으로 이동합니다.")
     with col2:
         if st.button(
-            "확인했습니다 →",
+            "확인 후 이동 →",
             type="primary",
             use_container_width=True,
             disabled=not agreed,
@@ -60,7 +58,7 @@ if not st.session_state.get("accepted"):
 
 # --- Redirect ---
 else:
-    st.markdown("이동 중입니다...")
+    st.markdown("서울 서버 앱으로 이동 중입니다...")
 
     components.html(
         f"""
